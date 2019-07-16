@@ -22,12 +22,15 @@ public class JobShopSchedulingScript : MonoBehaviour
     // first list is jobs, seconds list is machines
     private List<List<Vector3>> JobSchedule;
 
+    private List<List<Vector3>> MachineIntervals;
+
 
     private void ParseMatrix()
     {
         char[] separators = new char[] { ' ' };
 
         JobSchedule = new List<List<Vector3>>();
+        MachineIntervals = new List<List<Vector3>>();
 
         if (JobMatrix == "")
         {
@@ -65,6 +68,19 @@ public class JobShopSchedulingScript : MonoBehaviour
                     }
                 } else
                 {
+                    // Make empty Machine Interval list
+                    for (int job = 0; job < NumJobs; job++)
+                    {
+                        List<Vector3> sequence = new List<Vector3>();
+                        for (int task = 0; task < NumMachines; task++)
+                        {
+                            Vector3 taskInfo = new Vector3();
+                            sequence.Add(taskInfo);
+                        }
+                        MachineIntervals.Add(sequence);
+                    }
+
+                    // Create a Job Sequence Matrix
                     List<Vector3> jobSequence = new List<Vector3>();
                     Vector3 jobSequenceInfo = new Vector3();
 
@@ -142,12 +158,31 @@ public class JobShopSchedulingScript : MonoBehaviour
             }
         }
     }
+    void GenerateSchedule()
+    {
+        int[] MachineOccupiedTimes = new int[NumMachines];
+        for (int task = 0; task < NumMachines; task++)
+        {
+            for (int job = 0; job < NumJobs; job++)
+            {
+                MachineOccupiedTimes[Convert.ToInt32(JobSchedule[job][task].x)] = MachineOccupiedTimes[Convert.ToInt32(JobSchedule[job][task].x)] + Convert.ToInt32(JobSchedule[job][task].y);
+                Vector3 taskInfo = JobSchedule[job][task];
+                taskInfo.z = MachineOccupiedTimes[Convert.ToInt32(JobSchedule[job][task].x)];
+
+                JobSchedule[job][task] = taskInfo;
+
+            }
+
+        }
+
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         ParseMatrix();
-        PrioritizeJob(0);
+        //PrioritizeJob(0);
+        GenerateSchedule();
         print(MatrixDescription);
         for (int x = 0; x < NumJobs; x++)
         {
