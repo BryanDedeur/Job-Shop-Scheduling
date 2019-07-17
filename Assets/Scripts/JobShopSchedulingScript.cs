@@ -12,6 +12,7 @@ public class JobShopSchedulingScript : MonoBehaviour
     */
     [TextArea(7, 51)]
     public string JobMatrix;
+    public GameObject GanttChart;
 
     // ------------------------ Processed Matrix Details --------------------- //
     private string MatrixDescription;
@@ -19,7 +20,7 @@ public class JobShopSchedulingScript : MonoBehaviour
     private int NumMachines;
 
 
-    // first list is jobs, seconds list is machines
+    // job list, machine list, task details (machine ID, duration, end time)
     private List<List<Vector3>> JobSchedule;
 
     private List<List<Vector3>> MachineIntervals;
@@ -170,9 +171,7 @@ public class JobShopSchedulingScript : MonoBehaviour
                 taskInfo.z = MachineOccupiedTimes[Convert.ToInt32(JobSchedule[job][task].x)];
 
                 JobSchedule[job][task] = taskInfo;
-
             }
-
         }
 
     }
