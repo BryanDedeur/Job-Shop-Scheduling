@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class JobShopSchedulingScript : MonoBehaviour
+public class JobShopSchedulerObject : MonoBehaviour
 {
 
 
@@ -11,44 +11,54 @@ public class JobShopSchedulingScript : MonoBehaviour
      *  line 1, matrix description
     */
     [TextArea(7, 51)]
-    public string JobMatrix;
-    public GameObject GanttChart;
+    public string JobMatrixInput;
+    // public GameObject GanttChart;
 
     // ------------------------ Processed Matrix Details --------------------- //
-    private string MatrixDescription;
-    private int NumJobs;
-    private int NumMachines;
+
+    public int NumJobs = 0;
+    public int NumMachines = 0;
 
 
     // job list, machine list, task details (machine ID, duration, end time)
-    private List<List<Vector3>> JobSchedule;
+    //private List<List<Vector3>> JobSchedule;
+    //private List<List<Vector3>> MachineIntervals;
 
-    private List<List<Vector3>> MachineIntervals;
+    // --------------------------- NEW STUFF --------------------------------- //
 
+    public List<JobObject> m_JobObjects;
+    public List<MachineObject> m_MachineObjects;
 
-    private void ParseMatrix()
+    public string m_MatrixDescription;
+    public int m_TotalProductionDuration;
+
+    private void CreateJobShop()
     {
         char[] separators = new char[] { ' ' };
 
-        JobSchedule = new List<List<Vector3>>();
-        MachineIntervals = new List<List<Vector3>>();
 
-        if (JobMatrix == "")
+        m_JobObjects = new List<JobObject>();
+        m_MachineObjects = new List<MachineObject>();
+        //JobSchedule = new List<List<Vector3>>();
+        //MachineIntervals = new List<List<Vector3>>();
+
+        if (JobMatrixInput == "")
         {
             print("Matrix is empty");
         }
         else
         {
-            //int numJobs = JobMatrix.Split("\n"[0])[1];
+
             int rowColIndex = 0;
-            var textLines = JobMatrix.Split("\n"[0]);
+            var textLines = JobMatrixInput.Split("\n"[0]);
             for (int i = 0; i < textLines.Length; i++)
             {
+                // if the first row is description text then
                 if (i == 0 && textLines[i].Length > 20)
                 {
-                    MatrixDescription = textLines[i];
+                    m_MatrixDescription = textLines[i];
                     rowColIndex = 1;
-                }
+                } // if the current row is row col information
                 else if (rowColIndex == i)
                 {
                     int count = 0;
@@ -62,65 +72,62 @@ public class JobShopSchedulingScript : MonoBehaviour
                                 break;
                             case 2:
                                 NumMachines = Convert.ToInt32(token);
+                                // add all the machines now so duplicates don't get created later
+                                for (int y = 0; y < NumMachines; y++)
+                                {
+                                    m_MachineObjects.Add(new MachineObject(this, y));
+                                }
                                 break;
                             default:
                                 break;
                         }
                     }
                 } else
-                {
-                    // Make empty Machine Interval list
-                    for (int job = 0; job < NumJobs; job++)
-                    {
-                        List<Vector3> sequence = new List<Vector3>();
-                        for (int task = 0; task < NumMachines; task++)
-                        {
-                            Vector3 taskInfo = new Vector3();
-                            sequence.Add(taskInfo);
-                        }
-                        MachineIntervals.Add(sequence);
-                    }
+                { // else create a job object with the tasks from the row input
+                    JobObject currentJob = new JobObject(this);
 
-                    // Create a Job Sequence Matrix
-                    List<Vector3> jobSequence = new List<Vector3>();
-                    Vector3 jobSequenceInfo = new Vector3();
+                    // TaskObject currentTask = new TaskObject(this, currentJob);
+                    MachineObject currentMachine = m_MachineObjects[0];
 
                     bool isMachineID = true;
                     foreach (var value in textLines[i].Split(separators, StringSplitOptions.RemoveEmptyEntries))
                     {
-
-                        int number = 0;
-                        bool success = Int32.TryParse(value, out number);
+                        int valueFound = 0;
+                        bool success = Int32.TryParse(value, out valueFound);
                         if (success)
                         {
                             if (isMachineID == true)
                             {
-                                jobSequenceInfo.x = number;
+                                currentMachine = m_MachineObjects[valueFound];
                             }
                             else
                             {
-                                jobSequenceInfo.y = number;
-                                jobSequence.Add(jobSequenceInfo);
-                                jobSequenceInfo = new Vector3();
+                                currentJob.AddTask(currentMachine, valueFound);
                             }
                             isMachineID = !isMachineID;
-                            //Console.WriteLine("Converted '{0}' to {1}.", value, number);
-
                         }
                         else
                         {
-                            Console.WriteLine("AtjobSequenceted conversion of '{0}' failed.",
-                                               value ?? "<null>");
+                            Console.WriteLine("Conversion of '{0}' failed.", value ?? "<null>");
                             break;
                         }
                     }
+
+                    m_JobObjects.Add(currentJob);
+
+                    /*
+                    List<Vector3> jobSequence = new List<Vector3>();
+                    Vector3 jobSequenceInfo = new Vector3();
+
+
                     JobSchedule.Add(jobSequence);
+                    */
                 }
             }
         }
     }
 
-
+    /*
     // jobNumber is the index of the job to prioritize using 0 base indexing
     void PrioritizeJob(int jobNumber)
     {
@@ -175,12 +182,21 @@ public class JobShopSchedulingScript : MonoBehaviour
         }
 
     }
+    */
 
     // Start is called before the first frame update
     void Start()
     {
-        ParseMatrix();
+
+
+
+        CreateJobShop();
+        for (int i = 0; i < m_JobObjects.Count; i++)
+        {
+            m_MachineObjects[i].Print();
+        }
         //PrioritizeJob(0);
+        /*
         GenerateSchedule();
         print(MatrixDescription);
         for (int x = 0; x < NumJobs; x++)
@@ -192,6 +208,7 @@ public class JobShopSchedulingScript : MonoBehaviour
             }
             print(printStuff);
         }
+        */
     }
 
     // Update is called once per frame
