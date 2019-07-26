@@ -7,40 +7,31 @@ public class JobShopSchedulerObject : MonoBehaviour
 {
 
 
-    /*  
-     *  line 1, matrix description
-    */
     [TextArea(7, 51)]
     public string JobMatrixInput;
-    // public GameObject GanttChart;
-
-    // ------------------------ Processed Matrix Details --------------------- //
+    public string m_MatrixDescription;
 
     public int NumJobs = 0;
     public int NumMachines = 0;
 
+    public int m_TotalProductionTime = 100;
 
-    // job list, machine list, task details (machine ID, duration, end time)
-    //private List<List<Vector3>> JobSchedule;
-    //private List<List<Vector3>> MachineIntervals;
+    private List<JobObject> m_JobObjects;
+    private List<MachineObject> m_MachineObjects;
 
-    // --------------------------- NEW STUFF --------------------------------- //
+    public GameObject m_MachineObjectRef;
+    public GameObject m_JobObjectRef;
+    public GameObject m_TaskObjectRef;
+    public GameObject m_ScheduleGui;
 
-    public List<JobObject> m_JobObjects;
-    public List<MachineObject> m_MachineObjects;
-
-    public string m_MatrixDescription;
-    public int m_TotalProductionDuration;
+    private int m_TotalProductionDuration;
 
     private void CreateJobShop()
     {
         char[] separators = new char[] { ' ' };
 
-
         m_JobObjects = new List<JobObject>();
         m_MachineObjects = new List<MachineObject>();
-        //JobSchedule = new List<List<Vector3>>();
-        //MachineIntervals = new List<List<Vector3>>();
 
         if (JobMatrixInput == "")
         {
@@ -75,7 +66,7 @@ public class JobShopSchedulerObject : MonoBehaviour
                                 // add all the machines now so duplicates don't get created later
                                 for (int y = 0; y < NumMachines; y++)
                                 {
-                                    m_MachineObjects.Add(new MachineObject(this, y));
+                                    m_MachineObjects.Add(MachineObject.CreateComponent(m_MachineObjectRef, this, y));
                                 }
                                 break;
                             default:
@@ -84,7 +75,7 @@ public class JobShopSchedulerObject : MonoBehaviour
                     }
                 } else
                 { // else create a job object with the tasks from the row input
-                    JobObject currentJob = new JobObject(this);
+                    JobObject currentJob = JobObject.CreateComponent(m_JobObjectRef, this, m_JobObjects.Count);
 
                     // TaskObject currentTask = new TaskObject(this, currentJob);
                     MachineObject currentMachine = m_MachineObjects[0];
@@ -114,14 +105,6 @@ public class JobShopSchedulerObject : MonoBehaviour
                     }
 
                     m_JobObjects.Add(currentJob);
-
-                    /*
-                    List<Vector3> jobSequence = new List<Vector3>();
-                    Vector3 jobSequenceInfo = new Vector3();
-
-
-                    JobSchedule.Add(jobSequence);
-                    */
                 }
             }
         }
@@ -184,16 +167,70 @@ public class JobShopSchedulerObject : MonoBehaviour
     }
     */
 
-    // Start is called before the first frame update
+    void GenerateSchedule()
+    {
+
+        int latestEndTime = 0;
+        // Considering no machine overlap constraint
+        for (int machine = 0; machine < m_MachineObjects.Count; machine++)
+        {
+            TaskObject lastTask = null;
+            for (int task = 0; task < m_MachineObjects[machine].m_Tasks.Count; task++)
+            {
+                if (lastTask == null)
+                {
+                    m_MachineObjects[machine].m_Tasks[task].UpdateStartTime(0);
+                    lastTask = m_MachineObjects[machine].m_Tasks[task];
+                } else
+                {
+                    m_MachineObjects[machine].m_Tasks[task].UpdateStartTime(lastTask.m_EndTime);
+                }
+            }
+        }
+
+        
+        // Considering job precedence constraint
+        for (int job = 0; job < m_JobObjects.Count; job++)
+        {
+            TaskObject lastTask = null;
+            for (int task = 0; task < m_MachineObjects[job].m_Tasks.Count; task++)
+            {
+                if (lastTask != null)
+                {
+                    if (m_JobObjects[job].m_Tasks[task].m_StartTime < lastTask.m_EndTime)
+                    {
+                        m_JobObjects[job].m_Tasks[task].UpdateStartTime(lastTask.m_EndTime);
+                    }
+                }
+
+                // need to push back tasks on the machine to avoid overlap
+
+                
+
+                lastTask = m_JobObjects[job].m_Tasks[task];
+
+                if (latestEndTime < m_JobObjects[job].m_Tasks[task].m_EndTime)
+                {
+                    latestEndTime = m_JobObjects[job].m_Tasks[task].m_EndTime;
+                }
+            }
+        }
+        m_TotalProductionTime = latestEndTime;
+    }
+
+
+        // Start is called before the first frame update
     void Start()
     {
 
 
 
         CreateJobShop();
+        GenerateSchedule();
         for (int i = 0; i < m_JobObjects.Count; i++)
         {
             m_MachineObjects[i].Print();
+            m_MachineObjects[i].UpdateGUI();
         }
         //PrioritizeJob(0);
         /*

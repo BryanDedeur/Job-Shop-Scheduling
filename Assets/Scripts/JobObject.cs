@@ -6,7 +6,6 @@ using UnityEngine;
 // Job object contains information about the tasks and the time duration of the job
 public class JobObject : MonoBehaviour
 {
-
     // -------------- ORDERING --------------------- //
     public int m_JobID;
 
@@ -22,36 +21,45 @@ public class JobObject : MonoBehaviour
     public JobShopSchedulerObject m_JobShopSchedulerObject;
     public List<TaskObject> m_Tasks;
     public int m_NumberOfTasks;
+    private static GameObject gameObjectRef;
 
     // -------------- VISUALS ---------------------- //
+    public Color ColorRef;
 
-
-
-
-    // Constructor 
-    public JobObject(JobShopSchedulerObject jsso)
+    // Constructor
+    public static JobObject CreateComponent(GameObject where, JobShopSchedulerObject jsso, int jobNum)
     {
-        m_JobShopSchedulerObject = jsso;
-        m_Tasks = new List<TaskObject>();
-        m_NumberOfTasks = 0;
-        m_TotalDuration = 0;
-        m_StartTime = 0;
-        m_EndTime = 0;
-        m_JobID = jsso.m_JobObjects.Count;
+        gameObjectRef = Instantiate(where);
+        gameObjectRef.transform.parent = jsso.transform;
+        
+        JobObject job = gameObjectRef.AddComponent<JobObject>();
+        job.m_JobShopSchedulerObject = jsso;
+        job.m_Tasks = new List<TaskObject>();
+        job.m_NumberOfTasks = 0;
+        job.m_TotalDuration = 0;
+        job.m_StartTime = 0;
+        job.m_EndTime = 0;
+        job.m_JobID = jobNum;
+
+        gameObjectRef.name = "Job" + job.m_JobID;
+
+        job.ColorRef = new Color(
+            Random.Range(0f, 1f),
+            Random.Range(0f, 1f),
+            Random.Range(0f, 1f)
+        );
+
+        return job;
     }
+
+
 
     // Adds a task to the end of the task list
     public void AddTask(MachineObject machine, int duration)
     {
-        m_Tasks.Add(new TaskObject(m_JobShopSchedulerObject, this, machine, duration));
+        m_Tasks.Add(TaskObject.CreateComponent(m_JobShopSchedulerObject.m_TaskObjectRef, m_JobShopSchedulerObject, this, machine, m_Tasks.Count, duration));
         m_NumberOfTasks += 1;
         m_TotalDuration += duration;
-    }
-
-    // Removes the specified task from the job list
-    public void RemoveTask(ref TaskObject newTask)
-    {
-
     }
 
     // Sets the starting time of the job
