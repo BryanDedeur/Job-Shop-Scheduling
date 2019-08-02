@@ -5,8 +5,6 @@ using UnityEngine.UI;
 
 public class MachineObject : MonoBehaviour
 {
-
-
     // -------------- ORDERING --------------------- //
     public string MachineName;
     public int MachineID;
@@ -58,8 +56,9 @@ public class MachineObject : MonoBehaviour
         RectTransform parentRect = m_JobShopSchedulerObject.m_ScheduleGui.GetComponent<RectTransform>();
         RectTransform rect = m_GuiRow.GetComponent<RectTransform>();
         rect.sizeDelta = parentRect.sizeDelta;
-        rect.sizeDelta = new Vector2(rect.sizeDelta.x, rect.sizeDelta.y / m_JobShopSchedulerObject.NumMachines);
+        rect.sizeDelta = new Vector2(rect.sizeDelta.x, rect.sizeDelta.y / m_JobShopSchedulerObject.algorithm.NumMachines);
         rect.anchoredPosition = new Vector3(0, -(rect.sizeDelta.y * MachineID), -5);
+        rect.position = new Vector3(rect.position.x, rect.position.y, -5);
 
         for (int i = 0; i < m_Tasks.Count; i++)
         {

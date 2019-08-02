@@ -44,9 +44,9 @@ public class JobObject : MonoBehaviour
         gameObjectRef.name = "Job" + job.m_JobID;
 
         job.ColorRef = new Color(
-            Random.Range(0f, 1f),
-            Random.Range(0f, 1f),
-            Random.Range(0f, 1f)
+            Random.Range(.25f, 1f),
+            Random.Range(.25f, 1f),
+            Random.Range(.25f, 1f)
         );
 
         return job;
