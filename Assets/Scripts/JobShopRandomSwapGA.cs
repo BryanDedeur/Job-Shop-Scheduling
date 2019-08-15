@@ -70,6 +70,7 @@ public class JobShopRandomSwapGA : MonoBehaviour
     // Procudes a makespan based on the passed schedule
     int ComputeScheduleMakespan(ref List<int> schedule)
     {
+
         for (int i = 0; i < NumJobs; i++)
         {
             NextJobTaskIndexs[i] = 0;
@@ -115,7 +116,6 @@ public class JobShopRandomSwapGA : MonoBehaviour
                 int greaterEndTime = Mathf.Max(previousJobTaskEndTime, previousMachineTaskEndTime);
                 MachineTaskEndTimes[currentMachine][currentMachineTask] = greaterEndTime + duration;
                 JobTaskEndTimes[currentJob][currentJobTask] = greaterEndTime + duration;
-
             }
         }
 
@@ -136,8 +136,10 @@ public class JobShopRandomSwapGA : MonoBehaviour
     // @returns best makespan
     int MinimizeMakespan()
     {
+
         for (int i = 0; i < NumGenerationsPerRender; i++)
         {
+
             //print("Ran algorithm " + GenerationNumber + " times");
             GenerationNumber += 1;
             MakeScheduleFromLast();
@@ -152,13 +154,13 @@ public class JobShopRandomSwapGA : MonoBehaviour
                 generationOutput += GenerationNumber + ", ";
                 makespanOutput += CurrentMakespan + ", ";
 
-                jsso.GenerateSchedule();
-
                 BestSchedule = ConvertListToString(ref LastSchedule);
                 BestMakespan = LastMakespan;
+
+                jsso.GenerateSchedule();
+
             }
         }
-
 
         return BestMakespan;
     }

@@ -22,6 +22,7 @@ public class MachineObject : MonoBehaviour
     public int m_NumberOfTasks;
     private static GameObject gameObjectRef;
     public GameObject m_GuiRow;
+    public GameObject m_Label;
 
     // -------------- VISUALS ---------------------- //
 
@@ -41,6 +42,11 @@ public class MachineObject : MonoBehaviour
         machine.m_GuiRow = GameObject.Find(gameObjectRef.name + "/MachineRowPanel");
         machine.m_GuiRow.transform.SetParent(jsso.m_ScheduleGui.transform);
 
+        machine.m_Label = GameObject.Find(gameObjectRef.name + "/LabelPanel");
+        machine.m_Label.transform.SetParent(machine.m_GuiRow.transform);
+
+
+
         return machine;
     }
 
@@ -55,10 +61,22 @@ public class MachineObject : MonoBehaviour
     {
         RectTransform parentRect = m_JobShopSchedulerObject.m_ScheduleGui.GetComponent<RectTransform>();
         RectTransform rect = m_GuiRow.GetComponent<RectTransform>();
-        rect.sizeDelta = parentRect.sizeDelta;
-        rect.sizeDelta = new Vector2(rect.sizeDelta.x, rect.sizeDelta.y / m_JobShopSchedulerObject.algorithm.NumMachines);
+        //rect.sizeDelta = parentRect.sizeDelta;
+        rect.sizeDelta = new Vector2(rect.sizeDelta.x, parentRect.rect.height / m_JobShopSchedulerObject.algorithm.NumMachines);
         rect.anchoredPosition = new Vector3(0, -(rect.sizeDelta.y * MachineID), -5);
         rect.position = new Vector3(rect.position.x, rect.position.y, -5);
+
+        parentRect = rect;
+
+        rect = m_Label.GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(rect.sizeDelta.x, parentRect.sizeDelta.y);
+        rect.anchoredPosition = new Vector3(0, 0, 0);
+        rect.position = new Vector3(rect.position.x, rect.position.y, 0);
+
+        GameObject text = m_Label.transform.Find("Text").gameObject;
+        RectTransform textRect = text.GetComponent<RectTransform>();
+        Text textDisplay = text.GetComponent<Text>();
+        textDisplay.text = "  Machine " + MachineID;
 
         for (int i = 0; i < m_Tasks.Count; i++)
         {

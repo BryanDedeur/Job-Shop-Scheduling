@@ -8,8 +8,8 @@ public class JobShopSchedulerObject : MonoBehaviour
 
     public JobShopRandomSwapGA algorithm;
 
-    private List<JobObject> m_JobObjects;
-    private List<MachineObject> m_MachineObjects;
+    public List<JobObject> m_JobObjects;
+    public List<MachineObject> m_MachineObjects;
 
     public GameObject m_MachineObjectRef;
     public GameObject m_JobObjectRef;
@@ -19,7 +19,7 @@ public class JobShopSchedulerObject : MonoBehaviour
     private void Start()
     {
         RectTransform rect = m_ScheduleGui.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(Screen.width, Screen.height);
+        //rect.sizeDelta = new Vector2(Screen.width, Screen.height);
     }
 
 
@@ -34,48 +34,38 @@ public class JobShopSchedulerObject : MonoBehaviour
             m_MachineObjects.Add(MachineObject.CreateComponent(m_MachineObjectRef, this, y));
         }
 
-        for (int y = 0; y < algorithm.NumJobs; y++)
+        for (int j = 0; j < algorithm.NumJobs; j++)
         {
-            JobObject currentJob = JobObject.CreateComponent(m_JobObjectRef, this, y);
-            for (int m = 0; m < algorithm.NumMachines; m++)
+            JobObject currentJob = JobObject.CreateComponent(m_JobObjectRef, this, j);
+            for (int t = 0; t < algorithm.NumMachines; t++)
             {
-                MachineObject currentMachine = m_MachineObjects[algorithm.JobTaskMachines[y][m]];
-                currentJob.AddTask(currentMachine, algorithm.JobTaskDurations[y][m]);
+                int machineIndex = algorithm.JobTaskMachines[j][t];
+                int duration = algorithm.JobTaskDurations[j][t];
+
+                MachineObject currentMachine = m_MachineObjects[machineIndex];
+
+                currentJob.AddTask(currentMachine, duration);
             }
             m_JobObjects.Add(currentJob);
+            currentJob = null;
         }
-    }
+    } 
 
     public void GenerateSchedule()
     {
-        
-        for (int machine = 0; machine < algorithm.NumMachines; machine++)
+
+        for (int job = 0; job < algorithm.NumJobs; job++)
         {
-            for (int task = 0; task < algorithm.NumJobs; task++)
+            for (int task = 0; task < algorithm.NumMachines; task++)
             {
-                int startTime = algorithm.MachineTaskEndTimes[machine][task] - m_MachineObjects[machine].m_Tasks[task].m_Duration;
-                m_MachineObjects[machine].m_Tasks[task].UpdateStartTime(startTime);
+                int startTime = algorithm.JobTaskEndTimes[job][task] - m_JobObjects[job].m_Tasks[task].m_Duration;
+                m_JobObjects[job].m_Tasks[task].UpdateStartTime(startTime);
             }
         }
-        
-        /*
-        for (int currentJob = 0; currentJob < algorithm.NumJobs; currentJob++)
-        {
-            for (int currentJobTask = 0; currentJobTask < algorithm.NumMachines; currentJobTask++)
-            {
-                int currentMachine = algorithm.JobTaskMachines[currentJob][currentJobTask];
-
-                int duration = algorithm.JobTaskDurations[currentJob][currentJobTask];
-
-                int startTime = algorithm.MachineTaskEndTimes[currentMachine][currentJobTask] - m_MachineObjects[currentMachine].m_Tasks[currentJobTask].m_Duration;
-                m_MachineObjects[currentMachine].m_Tasks[currentJobTask].UpdateStartTime(startTime);
-            }
-        }
-        */
 
         for (int i = 0; i < m_JobObjects.Count; i++)
         {
-            m_MachineObjects[i].Print();
+            //m_MachineObjects[i].Print();
             m_MachineObjects[i].UpdateGUI();
         }
 

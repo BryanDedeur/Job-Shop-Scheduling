@@ -24,7 +24,7 @@ public class TaskObject : MonoBehaviour
 
 
     // -------------- VISUALS ---------------------- //
-    private GameObject m_GanttChartElement;
+    //private GameObject m_GanttChartElement;
 
     // Constructor
     public static TaskObject CreateComponent(GameObject where, JobShopSchedulerObject jsso, JobObject jo, MachineObject machine, int id, int duration)
@@ -58,9 +58,9 @@ public class TaskObject : MonoBehaviour
     {
         RectTransform parentRect = m_Machine.m_GuiRow.GetComponent<RectTransform>();
         RectTransform rect = m_GuiElement.GetComponent<RectTransform>();
-        rect.sizeDelta = parentRect.sizeDelta;
-        rect.anchoredPosition = new Vector3((rect.sizeDelta.x * ((float)m_StartTime / (float)m_JobShopSchedulerObject.algorithm.BestMakespan)), 0);
-        rect.sizeDelta = new Vector2(rect.sizeDelta.x * ((float) m_Duration / (float) m_JobShopSchedulerObject.algorithm.BestMakespan), rect.sizeDelta.y);
+        rect.sizeDelta = new Vector2(parentRect.rect.width - 75, parentRect.rect.height);
+        rect.anchoredPosition = new Vector3((rect.sizeDelta.x * ((float) m_StartTime / (float)m_JobShopSchedulerObject.algorithm.BestMakespan)), 0) + new Vector3(75, 0, 0);
+        rect.sizeDelta = new Vector2(rect.sizeDelta.x * ((float) m_Duration / (float) m_JobShopSchedulerObject.algorithm.BestMakespan), parentRect.rect.height);
         
 
         //Debug.Log((float) m_Duration / (float) m_JobShopSchedulerObject.m_TotalProductionTime);
@@ -68,42 +68,18 @@ public class TaskObject : MonoBehaviour
         Image image = m_GuiElement.GetComponent<Image>();
         image.color = m_Job.ColorRef;
 
-        GameObject text = m_GuiElement.transform.Find("JobText").gameObject;
+        GameObject text = m_GuiElement.transform.Find("DescriptionText").gameObject;
         RectTransform textRect = text.GetComponent<RectTransform>();
-        textRect.sizeDelta = rect.sizeDelta;
-        textRect.sizeDelta = new Vector2(textRect.sizeDelta.x, textRect.sizeDelta.y / 4);
-        textRect.anchoredPosition = new Vector3(0, -textRect.sizeDelta.y * 0);
+        //textRect.sizeDelta = rect.sizeDelta;
+        //textRect.sizeDelta = new Vector2(textRect.sizeDelta.x, textRect.sizeDelta.y / 4);
+        //textRect.anchoredPosition = new Vector3(0, -textRect.sizeDelta.y * 0);
         Text textDisplay = text.GetComponent<Text>();
-        textDisplay.text = "Job: " + m_Job.m_JobID;
-
-        text = m_GuiElement.transform.Find("TaskText").gameObject;
-        textRect = text.GetComponent<RectTransform>();
-        textRect.sizeDelta = rect.sizeDelta;
-        textRect.sizeDelta = new Vector2(textRect.sizeDelta.x, textRect.sizeDelta.y / 4);
-        textRect.anchoredPosition = new Vector3(0, -textRect.sizeDelta.y * 1);
-        textDisplay = text.GetComponent<Text>();
-        textDisplay.text = "Task: " + m_TaskID;
-
-        text = m_GuiElement.transform.Find("DurationText").gameObject;
-        textRect = text.GetComponent<RectTransform>();
-        textRect.sizeDelta = rect.sizeDelta;
-        textRect.sizeDelta = new Vector2(textRect.sizeDelta.x, textRect.sizeDelta.y / 4);
-        textRect.anchoredPosition = new Vector3(0, -textRect.sizeDelta.y * 2);
-        textDisplay = text.GetComponent<Text>();
-        textDisplay.text = "Duration: " + m_Duration;
-
-        text = m_GuiElement.transform.Find("EndTimeText").gameObject;
-        textRect = text.GetComponent<RectTransform>();
-        textRect.sizeDelta = rect.sizeDelta;
-        textRect.sizeDelta = new Vector2(textRect.sizeDelta.x, textRect.sizeDelta.y / 4);
-        textRect.anchoredPosition = new Vector3(0, -textRect.sizeDelta.y * 3);
-        textDisplay = text.GetComponent<Text>();
-        textDisplay.text = "End Time: " + m_EndTime;
+        textDisplay.text = "Job: " + m_Job.m_JobID + "\nTask: " + m_TaskID + "\nDuration: " + m_Duration + "\nTime: " + m_StartTime + " - " + m_EndTime;
     }
 
     public string GetPrintString()
     {
-        return "[Machine:" + m_Machine.MachineID + " Job:" + m_Job.m_JobID + " Task:" + m_TaskID + " Duration:" + m_Duration + "]";
+        return "[Machine:" + m_Machine.MachineID + " Job:" + m_Job.m_JobID + " Task:" + m_TaskID + " Duration:" + m_Duration + " End:" + m_EndTime + "]";
     }
 }
 
