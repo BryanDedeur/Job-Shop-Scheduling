@@ -10,6 +10,8 @@ public class JobShopRandomSwapGA : MonoBehaviour
     [TextArea(7, 51)]
     public string ScheduleInput;
     public string Description;
+    public bool RandomSwap;
+    public bool RandomInvert;
 
     // Scheduling Generation Variables
     public bool RunAlgorithm;
@@ -18,6 +20,8 @@ public class JobShopRandomSwapGA : MonoBehaviour
     public long GenerationNumber = 0;
     public int NumGenerationsPerRender;
     public int MaxGenerations;
+    public int CurrentSample;
+    public int MaxSamples;
 
     // Private members
     public int NumJobs;
@@ -28,7 +32,7 @@ public class JobShopRandomSwapGA : MonoBehaviour
     private List<int> LastSchedule;
     private int LastMakespan;
     private List<int> CurrentSchedule;
-    private int CurrentMakespan;
+    public int CurrentMakespan;
 
     // Job Task Corresponding Matrixs (first list is task, nested list is job)
     public List<List<int>> JobTaskIDs;
@@ -48,7 +52,30 @@ public class JobShopRandomSwapGA : MonoBehaviour
     // Take previous schedule and adjust stuff
     void MakeScheduleFromLast()
     {
-        CurrentSchedule = RandomSwapListItems(ref LastSchedule);
+        CurrentSchedule = LastSchedule;
+        if (RandomSwap)
+            CurrentSchedule = RandomSwapListItems(ref LastSchedule);
+
+        if (RandomInvert)
+            CurrentSchedule = RandomInvertListItems(ref LastSchedule);
+    }
+
+    // Picks two random list items and randomly swaps them
+    List<int> RandomInvertListItems(ref List<int> passedList)
+    {
+        List<int> newSwappedList = passedList;
+
+        int randomIndex1 = (int) UnityEngine.Random.Range(0f, NumTasks);
+        int randomIndex2 = (int) UnityEngine.Random.Range(0f, NumTasks);
+        int j = (int) Mathf.Max((float) randomIndex1, (float) randomIndex2);
+        for (int i = (int) Mathf.Min((float) randomIndex1, (float) randomIndex2); i < j; i++) {
+            int temp = newSwappedList[i];
+            newSwappedList[i] = newSwappedList[j];
+            newSwappedList[j] = temp;
+            j--;
+        }
+
+        return newSwappedList;
     }
 
     // Picks two random list items and randomly swaps them
@@ -136,10 +163,8 @@ public class JobShopRandomSwapGA : MonoBehaviour
     // @returns best makespan
     int MinimizeMakespan()
     {
-
         for (int i = 0; i < NumGenerationsPerRender; i++)
         {
-
             //print("Ran algorithm " + GenerationNumber + " times");
             GenerationNumber += 1;
             MakeScheduleFromLast();
@@ -160,7 +185,10 @@ public class JobShopRandomSwapGA : MonoBehaviour
                 jsso.GenerateSchedule();
 
             }
+            jsso.UpdateSlider();
         }
+
+
 
         return BestMakespan;
     }
@@ -285,6 +313,7 @@ public class JobShopRandomSwapGA : MonoBehaviour
                 NextMachineTaskIndexs.Add(0);
             }
         }
+        MakeScheduleFromLast();
     }
 
     string ConvertListToString(ref List<int> passedList)
@@ -315,7 +344,21 @@ public class JobShopRandomSwapGA : MonoBehaviour
         } else if (MaxGenerations == 0)
         {
             BestMakespan = MinimizeMakespan();
+        }
 
+        if (MaxGenerations <= GenerationNumber) {
+            if (MaxSamples > CurrentSample) {
+                CurrentSample += 1;
+                GenerationNumber = 0;
+                ReadScheduleInput();
+            } else {
+                if (RunAlgorithm) {
+                    RunAlgorithm = false;
+                    jsso.PrintResults();
+                }
+
+            }
+        } else {
         }
     }
 

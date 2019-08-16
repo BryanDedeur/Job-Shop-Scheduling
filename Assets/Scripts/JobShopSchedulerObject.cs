@@ -15,22 +15,25 @@ public class JobShopSchedulerObject : MonoBehaviour
     public GameObject m_JobObjectRef;
     public GameObject m_TaskObjectRef;
     public GameObject m_ScheduleGui;
+    public GameObject m_MakespanGui;
+    
+    private MakespanPlotter plotter;
 
     private void Start()
     {
         RectTransform rect = m_ScheduleGui.GetComponent<RectTransform>();
+        plotter = m_MakespanGui.GetComponent<MakespanPlotter>();
         //rect.sizeDelta = new Vector2(Screen.width, Screen.height);
     }
 
 
-    public void CreateObjects()
-    {
+    public void CreateObjects() {
+   
         m_JobObjects = new List<JobObject>();
         m_MachineObjects = new List<MachineObject>();
 
         for (int y = 0; y < algorithm.NumMachines; y++)
         {
-            
             m_MachineObjects.Add(MachineObject.CreateComponent(m_MachineObjectRef, this, y));
         }
 
@@ -50,6 +53,12 @@ public class JobShopSchedulerObject : MonoBehaviour
             currentJob = null;
         }
     } 
+    
+    public void UpdateSlider()
+    {
+        plotter.ShowSample(algorithm.GenerationNumber, algorithm.CurrentMakespan);
+        plotter.UpdateSlider(algorithm.GenerationNumber);
+    }
 
     public void GenerateSchedule()
     {
@@ -69,6 +78,12 @@ public class JobShopSchedulerObject : MonoBehaviour
             m_MachineObjects[i].UpdateGUI();
         }
 
+        plotter.PlotDot(algorithm.GenerationNumber, algorithm.BestMakespan);
+        
+    }
+
+    public void PrintResults(){
+        plotter.PrintResults();
     }
 
 }
