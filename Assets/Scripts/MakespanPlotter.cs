@@ -67,7 +67,7 @@ public class MakespanPlotter : MonoBehaviour
     }
 
     public void ShowSample(long itteration, int makespan) {
-        /* 
+         
         if (tempDot != null) 
             Destroy(tempDot);
 
@@ -83,7 +83,7 @@ public class MakespanPlotter : MonoBehaviour
         dotrect.anchoredPosition = new Vector3(x, y);
         if (lastPos != new Vector2())
          tempLine = CreateDotConnection(lastPos, new Vector2(x, y), new Color(1,0,0));
-         */
+        
     }
 
     public void PlotDot(long itteration, int makespan) {

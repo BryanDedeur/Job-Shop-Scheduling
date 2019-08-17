@@ -3866,7 +3866,7 @@ MonoBehaviour:
   BestSchedule: 
   BestMakespan: 0
   GenerationNumber: 0
-  NumGenerationsPerRender: 10
+  NumGenerationsPerRender: 1
   MaxGenerations: 1000
   CurrentSample: 0
   MaxSamples: 30
