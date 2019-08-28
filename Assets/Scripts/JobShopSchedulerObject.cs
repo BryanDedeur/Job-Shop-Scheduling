@@ -6,7 +6,7 @@ using System;
 public class JobShopSchedulerObject : MonoBehaviour
 {
 
-    public JobShopRandomSwapGA algorithm;
+    public JobShopAlgorithm algorithm;
 
     public List<JobObject> m_JobObjects;
     public List<MachineObject> m_MachineObjects;
@@ -23,9 +23,7 @@ public class JobShopSchedulerObject : MonoBehaviour
     {
         RectTransform rect = m_ScheduleGui.GetComponent<RectTransform>();
         plotter = m_MakespanGui.GetComponent<MakespanPlotter>();
-        //rect.sizeDelta = new Vector2(Screen.width, Screen.height);
     }
-
 
     public void CreateObjects() {
    
@@ -62,28 +60,31 @@ public class JobShopSchedulerObject : MonoBehaviour
 
     public void GenerateSchedule()
     {
-
         for (int job = 0; job < algorithm.NumJobs; job++)
         {
             for (int task = 0; task < algorithm.NumMachines; task++)
             {
+                print("Job: " + job + "Task: " + task);
                 int startTime = algorithm.JobTaskEndTimes[job][task] - m_JobObjects[job].m_Tasks[task].m_Duration;
                 m_JobObjects[job].m_Tasks[task].UpdateStartTime(startTime);
             }
         }
 
-        for (int i = 0; i < m_JobObjects.Count; i++)
+        for (int i = 0; i < m_MachineObjects.Count; i++)
         {
             //m_MachineObjects[i].Print();
             m_MachineObjects[i].UpdateGUI();
         }
 
-        plotter.PlotDot(algorithm.GenerationNumber, algorithm.BestMakespan);
-        
+        plotter.PlotDot(algorithm.GenerationNumber, algorithm.BestMakespan);        
     }
 
     public void PrintResults(){
         plotter.PrintResults();
+    }
+
+    public void Clear(){
+        // m_ScheduleGui
     }
 
 }

@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class JobShopRandomSwapGA : MonoBehaviour
+public class JobShopAlgorithm : MonoBehaviour
 {
-
     // Public members
     [TextArea(7, 51)]
     public string ScheduleInput;
@@ -14,12 +13,13 @@ public class JobShopRandomSwapGA : MonoBehaviour
     public bool RandomInvert;
 
     // Scheduling Generation Variables
+    public bool RestartAlgorithm;
     public bool RunAlgorithm;
     public string BestSchedule;
     public int BestMakespan;
     public long GenerationNumber = 0;
     public int NumGenerationsPerRender;
-    public int MaxGenerations;
+    public int MaxGenerations; // this should calculate the max
     public int CurrentSample;
     public int MaxSamples;
 
@@ -110,15 +110,18 @@ public class JobShopRandomSwapGA : MonoBehaviour
 
         for (int index = 0; index < NumTasks; index++)
         {
-            int currentJob = schedule[index] / NumJobs; // this needs to be fixed doesnt work
-            int currentJobTask = NextJobTaskIndexs[currentJob];
-            //print(index + " " + currentJobTask);
+            //print(schedule[index]);
+            int currentJob = schedule[index] / NumMachines; // this needs to be fixed doesnt work
+            int currentJobTask = NextJobTaskIndexs[currentJob]; 
+            //print(currentJobTask); //------------------------------------------------------------------------------------------------------------------------------------
             NextJobTaskIndexs[currentJob]++;
             int currentMachine = JobTaskMachines[currentJob][currentJobTask];
-            int currentMachineTask = NextMachineTaskIndexs[currentMachine];
+            int currentMachineTask = NextMachineTaskIndexs[currentMachine]; // this is causing errors
             NextMachineTaskIndexs[currentMachine]++;
             int duration = JobTaskDurations[currentJob][currentJobTask];
 
+            // print("Current Machine: " + currentMachine);
+            // print("Current Machine Task: " + currentMachineTask);
             if (currentMachineTask == 0 && currentJobTask == 0)
             {
                 MachineTaskEndTimes[currentMachine][currentMachineTask] = duration;
@@ -187,26 +190,24 @@ public class JobShopRandomSwapGA : MonoBehaviour
             }
             jsso.UpdateSlider();
         }
-
-
-
         return BestMakespan;
     }
-
-
 
     // Takes the schedule input and initializes the arrays
     void ReadScheduleInput()
     {
+        // reset shop objects
+        //jsso.Clear();
+
         // reset data values
         NumJobs = 0;
         NumMachines = 0;
         NumTasks = 0;
 
         LastSchedule = new List<int>();
-        LastMakespan = 1000000; // TODO convert to mathf.infinity
+        LastMakespan = 999999;
         CurrentSchedule = new List<int>();
-        CurrentMakespan = 1000000; // TODO convert to mathf.infinity
+        CurrentMakespan = 999999; 
 
         JobTaskIDs = new List<List<int>>();
         JobTaskMachines = new List<List<int>>();
@@ -243,12 +244,10 @@ public class JobShopRandomSwapGA : MonoBehaviour
                             case 2:
                                 NumMachines = Convert.ToInt32(token);
                                 NumTasks = NumJobs * NumMachines;
-                                // populate data values
                                 for (int task = 0; task < NumTasks; task++)
                                 {
-                                    LastSchedule.Add(task); // just make a simple list of all the tasks
+                                    LastSchedule.Add(task);
                                 }
-                                //print(ConvertListToString(ref LastSchedule));
                                 break;
                         }
                     }
@@ -272,8 +271,6 @@ public class JobShopRandomSwapGA : MonoBehaviour
                         {
                             if (isMachineID == true)
                             {
-                                //Debug.Log(((jobIndex) * (taskIndex + 1)) - 1);
-
                                 tempJobTaskMachines.Add(valueFound);
                                 tempJobTaskTaskIDs.Add(LastSchedule[((jobIndex) * (taskIndex + 1)) - 1]);
                                 tempJobTaskEndTimes.Add(0);
@@ -305,10 +302,11 @@ public class JobShopRandomSwapGA : MonoBehaviour
             for (int machine = 0; machine < NumMachines; machine++)
             {
                 List<int> tempMachineEndTimes = new List<int>();
-                for (int task = 0; task < (NumMachines % NumTasks); task++)
+                for (int task = 0; task < NumJobs; task++)
                 {
                     tempMachineEndTimes.Add(0);
                 }
+
                 MachineTaskEndTimes.Add(tempMachineEndTimes);
                 NextMachineTaskIndexs.Add(0);
             }
@@ -329,14 +327,19 @@ public class JobShopRandomSwapGA : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ReadScheduleInput();
         jsso = transform.GetComponent<JobShopSchedulerObject>();
-        jsso.CreateObjects();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (RestartAlgorithm) {
+            //ReadScheduleInput();
+
+            jsso.CreateObjects();
+            RunAlgorithm = true;
+        }
+
         if (RunAlgorithm && MaxGenerations > GenerationNumber)
         {
             BestMakespan = MinimizeMakespan();

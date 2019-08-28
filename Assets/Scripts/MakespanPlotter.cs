@@ -7,7 +7,7 @@ public class MakespanPlotter : MonoBehaviour
 {
     public GameObject image;
     private RectTransform rect;
-    public JobShopRandomSwapGA algorithm;
+    public JobShopAlgorithm algorithm;
     public GameObject slider;
 
     private Vector2 lastPos;
