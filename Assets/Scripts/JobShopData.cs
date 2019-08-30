@@ -3,22 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class JobShopData : MonoBehaviour
-{   
+{
     // Public members
-    [TextArea(7, 51)]
-    public string ScheduleInput;
     public string Description;
     public bool RandomSwap;
     public bool RandomInvert;
 
     // Scheduling Generation Variables
-    // public bool RestartAlgorithm;
-    // public bool RunAlgorithm;
-    public string BestSchedule;
+    public bool RunAlgorithm;
+//    public string BestSchedule;
     public int BestMakespan;
-    public long GenerationNumber = 0;
-    public int NumGenerationsPerRender;
-    public int MaxGenerations; // this should calculate the max
+    private long ItterationNumber;
+    public int NumItterationPerRender;
+    private int MaxItterations; // this should calculate the max
     public int CurrentSample;
     public int MaxSamples;
 
@@ -28,10 +25,7 @@ public class JobShopData : MonoBehaviour
     public int NumTasks;
 
     // Scheduling Generation Variables
-    private List<int> LastSchedule;
-    private int LastMakespan;
-    private List<int> CurrentSchedule;
-    private int CurrentMakespan;
+    public List<int> BestListSchedule;
 
     // Job Task Corresponding Matrixs (first list is task, nested list is job)
     public List<List<int>> JobTaskIDs;
@@ -40,24 +34,30 @@ public class JobShopData : MonoBehaviour
     public List<List<int>> JobTaskEndTimes;
 
     // For tracking the task indexs
-    private List<int> NextJobTaskIndexs;
-    private List<int> NextMachineTaskIndexs;
+    public List<int> NextJobTaskIndexs;
+    public List<int> NextMachineTaskIndexs;
 
     // Machine Task Corresponding Matrixs
     public List<List<int>> MachineTaskEndTimes;
 
     // Data Collecting
-    public List<List<int>> ScheduleMakespanRunningAverage;
+    //public List<List<int>> ScheduleMakespanRunningAverage;
+    
+    private UIUpdater UIUpdater;
 
-    public void ClearAllData() {
+    public void ResetData()
+    {
+        RunAlgorithm = false;
+        //BestSchedule = "";
+        ItterationNumber = 0;
+        MaxItterations = 999999;
+        
         NumJobs = 0;
         NumMachines = 0;
         NumTasks = 0;
 
-        LastSchedule = new List<int>();
-        LastMakespan = 999999;
-        CurrentSchedule = new List<int>();
-        CurrentMakespan = 999999; 
+        BestListSchedule = new List<int>();
+        BestMakespan = 999999; // something huge
 
         JobTaskIDs = new List<List<int>>();
         JobTaskMachines = new List<List<int>>();
@@ -67,11 +67,40 @@ public class JobShopData : MonoBehaviour
 
         MachineTaskEndTimes = new List<List<int>>();
         NextMachineTaskIndexs = new List<int>();
+
+        UpdateVisuals();
+    }
+    
+    string ConvertListToString(ref List<int> passedList)
+    {
+        string scheduleString = "";
+        for (int i = 0; i < passedList.Count; i++)
+        {
+            scheduleString = scheduleString + passedList[i] + " ";
+        }
+        return scheduleString;
+    }
+
+    public void UpdateVisuals()
+    {
+        
+        UIUpdater.UpdateTextUI("ShopDetailsText", 
+             Description + "\n" +
+                    "Jobs: " + NumJobs.ToString() + "\n" +
+                    "Machines: " + NumMachines.ToString() + "\n" +
+                    "Tasks: " + NumTasks.ToString());
+        UIUpdater.UpdateTextUI("ScheduleDetailsText", 
+            "Best Schedule Makespan: " + BestMakespan.ToString() + "\n" +
+                    "Average Iterations Until Minimized Makespan: " + "\n" +
+                    "Running Average Minimize Success Rate: " + "\n" +
+                    "Best Schedule: " + ConvertListToString(ref BestListSchedule));
+        
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        ClearAllData();
+        UIUpdater = GetComponent<UIUpdater>();
+        ResetData();
     }
 }

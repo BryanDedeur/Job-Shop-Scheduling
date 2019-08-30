@@ -1,26 +1,31 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class JobShopInput : MonoBehaviour
 {
-    public JobShopData jsd;
-    public JobShopAlgorithm jsa;
+    public GameObject jobShopData;
+    private JobShopData jsd;
+    public GameObject InputField;
 
-    void ParseData()
+    public void ParseData()
     {
-        jsd.ClearAllData();
+        string text = InputField.GetComponent<InputField>().text;
 
-        char[] separators = new char[] {' '};
-        if (ScheduleInput != "")
+        if (!String.IsNullOrEmpty(text))
         {
+            jsd.ResetData();
+            char[] separators = new char[] {' '};
+
             int rowColIndex = 0;
-            string[] textLines = ScheduleInput.Split("\n"[0]);
+            string[] textLines = text.Split("\n"[0]);
             for (int i = 0; i < textLines.Length; i++)
             { 
                 if (i == 0 && textLines[i].Length > 20)
                 {
-                    Description = textLines[i]; // capture the description
+                    jsd.Description = textLines[i]; // capture the description
                     rowColIndex = 1;
                 }
                 else if (rowColIndex == i)
@@ -32,14 +37,14 @@ public class JobShopInput : MonoBehaviour
                         switch (count)
                         {
                             case 1:
-                                NumJobs = Convert.ToInt32(token);
+                                jsd.NumJobs = Convert.ToInt32(token);
                                 break;
                             case 2:
-                                NumMachines = Convert.ToInt32(token);
-                                NumTasks = NumJobs * NumMachines;
-                                for (int task = 0; task < NumTasks; task++)
+                                jsd.NumMachines = Convert.ToInt32(token);
+                                jsd.NumTasks = jsd.NumJobs * jsd.NumMachines;
+                                for (int task = 0; task < jsd.NumTasks; task++)
                                 {
-                                    LastSchedule.Add(task);
+                                    jsd.BestListSchedule.Add(task);
                                 }
                                 break;
                         }
@@ -65,7 +70,7 @@ public class JobShopInput : MonoBehaviour
                             if (isMachineID == true)
                             {
                                 tempJobTaskMachines.Add(valueFound);
-                                tempJobTaskTaskIDs.Add(LastSchedule[((jobIndex) * (taskIndex + 1)) - 1]);
+                                tempJobTaskTaskIDs.Add(jsd.BestListSchedule[((jobIndex) * (taskIndex + 1)) - 1]);
                                 tempJobTaskEndTimes.Add(0);
                             }
                             else // duration value
@@ -83,27 +88,33 @@ public class JobShopInput : MonoBehaviour
                         }
                     }
 
-                    NextJobTaskIndexs.Add(0);
+                    jsd.NextJobTaskIndexs.Add(0);
 
-                    JobTaskIDs.Add(tempJobTaskTaskIDs);
-                    JobTaskDurations.Add(tempJobTaskDurations);
-                    JobTaskMachines.Add(tempJobTaskMachines);
-                    JobTaskEndTimes.Add(tempJobTaskEndTimes);
+                    jsd.JobTaskIDs.Add(tempJobTaskTaskIDs);
+                    jsd.JobTaskDurations.Add(tempJobTaskDurations);
+                    jsd.JobTaskMachines.Add(tempJobTaskMachines);
+                    jsd.JobTaskEndTimes.Add(tempJobTaskEndTimes);
                 }
             }
 
-            for (int machine = 0; machine < NumMachines; machine++)
+            for (int machine = 0; machine < jsd.NumMachines; machine++)
             {
                 List<int> tempMachineEndTimes = new List<int>();
-                for (int task = 0; task < NumJobs; task++)
+                for (int task = 0; task < jsd.NumJobs; task++)
                 {
                     tempMachineEndTimes.Add(0);
                 }
 
-                MachineTaskEndTimes.Add(tempMachineEndTimes);
-                NextMachineTaskIndexs.Add(0);
+                jsd.MachineTaskEndTimes.Add(tempMachineEndTimes);
+                jsd.NextMachineTaskIndexs.Add(0);
             }
+            //MakeScheduleFromLast();
+            jsd.UpdateVisuals();
         }
-        MakeScheduleFromLast();
+    }
+
+    private void Start()
+    {
+        jsd = jobShopData.GetComponent<JobShopData>();
     }
 }

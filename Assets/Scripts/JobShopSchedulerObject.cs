@@ -5,6 +5,7 @@ using System;
 
 public class JobShopSchedulerObject : MonoBehaviour
 {
+/*
 
     public JobShopAlgorithm algorithm;
 
@@ -85,6 +86,6 @@ public class JobShopSchedulerObject : MonoBehaviour
 
     public void Clear(){
         // m_ScheduleGui
-    }
+    }*/
 
 }
