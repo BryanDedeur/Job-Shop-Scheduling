@@ -1,7 +1,14 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a71776e8-9079-437c-8a34-6f21fe9c924b" name="Default Changelist" comment="" />
+    <list default="true" id="a71776e8-9079-437c-8a34-6f21fe9c924b" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Job-Shop-Scheduling/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Job-Shop-Scheduling/.idea/contentModel.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Job-Shop-Scheduling/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Job-Shop-Scheduling/.idea/indexLayout.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Job-Shop-Scheduling/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Job-Shop-Scheduling/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/JobShopData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/JobShopData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/JobShopInput.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/JobShopInput.cs" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,6 +31,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/JobShopData.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/OnTaskHover.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/JobShopInput.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/JobShopIndirectAlgorithm.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/TaskObject.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/MakespanPlotter.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Depreciate/JobShopAlgorithmOld.cs" root0="FORCE_HIGHLIGHTING" />
@@ -39,8 +47,10 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/TaskObject.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI Scripts/JobShopDataUI.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/UI Scripts/UIUpdater.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/JobShopAlgorithm.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/JobShopInput.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/JobShopData.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/JobShopIndirectAlgorithm.cs" />
       </list>
     </option>
   </component>
@@ -91,6 +101,7 @@
       <option name="presentableId" value="Default" />
       <updated>1567188690839</updated>
       <workItem from="1567188694316" duration="8024000" />
+      <workItem from="1567555912625" duration="8271000" />
     </task>
     <servers />
   </component>
@@ -104,7 +115,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>

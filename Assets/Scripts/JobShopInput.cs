@@ -9,7 +9,12 @@ public class JobShopInput : MonoBehaviour
     public GameObject jobShopData;
     private JobShopData jsd;
     public GameObject InputField;
-
+    public GameObject SamplesInput;
+    public GameObject RandomSwapCheck;
+    public GameObject RandomInvertCheck;
+    public GameObject FunctionCheck;
+    public GameObject SliderText;
+    public GameObject Slider;
     public void ParseData()
     {
         string text = InputField.GetComponent<InputField>().text;
@@ -44,7 +49,7 @@ public class JobShopInput : MonoBehaviour
                                 jsd.NumTasks = jsd.NumJobs * jsd.NumMachines;
                                 for (int task = 0; task < jsd.NumTasks; task++)
                                 {
-                                    jsd.BestListSchedule.Add(task);
+                                    jsd.DefaultListSchedule.Add(task);
                                 }
                                 break;
                         }
@@ -70,7 +75,7 @@ public class JobShopInput : MonoBehaviour
                             if (isMachineID == true)
                             {
                                 tempJobTaskMachines.Add(valueFound);
-                                tempJobTaskTaskIDs.Add(jsd.BestListSchedule[((jobIndex) * (taskIndex + 1)) - 1]);
+                                tempJobTaskTaskIDs.Add(jsd.DefaultListSchedule[((jobIndex) * (taskIndex + 1)) - 1]);
                                 tempJobTaskEndTimes.Add(0);
                             }
                             else // duration value
@@ -111,6 +116,83 @@ public class JobShopInput : MonoBehaviour
             //MakeScheduleFromLast();
             jsd.UpdateVisuals();
         }
+    }
+
+    public void IncreaseSamples()
+    {
+        jsd.NumSamples += 1;
+        SamplesInput.transform.GetComponent<InputField>().text = jsd.NumSamples.ToString();
+    }
+    
+    public void DecreaseSamples()
+    {
+        jsd.NumSamples -= 1;
+        if (jsd.NumSamples < 1)
+        {
+            jsd.NumSamples = 1;
+        }
+        SamplesInput.transform.GetComponent<InputField>().text = jsd.NumSamples.ToString();
+    }
+    
+    public void CheckRandomSwapAlgorithm()
+    {
+        jsd.RandomSwap = RandomSwapCheck.transform.GetComponent<Toggle>().isOn;
+        if (jsd.RandomSwap || jsd.RandomInvert)
+        {
+            FunctionCheck.transform.GetComponent<Toggle>().isOn = false;
+            FunctionCheck.transform.GetComponent<Toggle>().interactable = false;
+        }
+        else
+        {
+            FunctionCheck.transform.GetComponent<Toggle>().interactable = true;
+        }
+    }
+    
+    public void CheckRandomInvertAlgorithm()
+    {
+        jsd.RandomInvert = RandomInvertCheck.transform.GetComponent<Toggle>().isOn;
+        if (jsd.RandomSwap || jsd.RandomInvert)
+        {
+            FunctionCheck.transform.GetComponent<Toggle>().isOn = false;
+            FunctionCheck.transform.GetComponent<Toggle>().interactable = false;
+        }
+        else
+        {
+            FunctionCheck.transform.GetComponent<Toggle>().interactable = true;
+        }
+    }
+    
+    public void CheckFunctionAlgorithm()
+    {
+        //jsd = RandomInvertCheck.transform.GetComponent<Toggle>().isOn;
+        if (FunctionCheck.transform.GetComponent<Toggle>().isOn)
+        {
+            RandomInvertCheck.transform.GetComponent<Toggle>().isOn = false;
+            RandomSwapCheck.transform.GetComponent<Toggle>().isOn = false;
+            RandomInvertCheck.transform.GetComponent<Toggle>().interactable = false;
+            RandomSwapCheck.transform.GetComponent<Toggle>().interactable = false;
+        }
+        else
+        {
+            RandomInvertCheck.transform.GetComponent<Toggle>().interactable = true;
+            RandomSwapCheck.transform.GetComponent<Toggle>().interactable = true;
+        }
+    }
+
+    public void SliderChanged()
+    {
+        jsd.NumIterationPerRender = (int) Slider.transform.GetComponent<Slider>().value;
+        SliderText.transform.GetComponent<Text>().text = jsd.NumIterationPerRender.ToString();
+    }
+
+    public void SamplesInputChanged()
+    {
+        jsd.NumSamples = int.Parse(SamplesInput.transform.GetComponent<InputField>().text);
+    }
+
+    public void Compute()
+    {
+        jsd.RunAlgorithm = true;
     }
 
     private void Start()

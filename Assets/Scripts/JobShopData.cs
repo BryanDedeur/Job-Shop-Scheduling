@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class JobShopData : MonoBehaviour
 {
@@ -11,13 +12,14 @@ public class JobShopData : MonoBehaviour
 
     // Scheduling Generation Variables
     public bool RunAlgorithm;
+
 //    public string BestSchedule;
     public int BestMakespan;
-    private long ItterationNumber;
-    public int NumItterationPerRender;
-    private int MaxItterations; // this should calculate the max
+    public long IterationNumber;
+    public int NumIterationPerRender = 1;
+    public int IterationCap;
     public int CurrentSample;
-    public int MaxSamples;
+    public int NumSamples = 30;
 
     // Private members
     public int NumJobs;
@@ -25,6 +27,7 @@ public class JobShopData : MonoBehaviour
     public int NumTasks;
 
     // Scheduling Generation Variables
+    public List<int> DefaultListSchedule;
     public List<int> BestListSchedule;
 
     // Job Task Corresponding Matrixs (first list is task, nested list is job)
@@ -42,16 +45,19 @@ public class JobShopData : MonoBehaviour
 
     // Data Collecting
     //public List<List<int>> ScheduleMakespanRunningAverage;
-    
+
+    public GameObject BestScheduleTextField;
+
     private UIUpdater UIUpdater;
 
     public void ResetData()
     {
         RunAlgorithm = false;
         //BestSchedule = "";
-        ItterationNumber = 0;
-        MaxItterations = 999999;
-        
+        IterationNumber = 0;
+        //MaxIterations = 999999;
+        CurrentSample = 0;
+
         NumJobs = 0;
         NumMachines = 0;
         NumTasks = 0;
@@ -70,7 +76,7 @@ public class JobShopData : MonoBehaviour
 
         UpdateVisuals();
     }
-    
+
     string ConvertListToString(ref List<int> passedList)
     {
         string scheduleString = "";
@@ -78,23 +84,23 @@ public class JobShopData : MonoBehaviour
         {
             scheduleString = scheduleString + passedList[i] + " ";
         }
+
         return scheduleString;
     }
 
     public void UpdateVisuals()
     {
-        
         UIUpdater.UpdateTextUI("ShopDetailsText", 
              Description + "\n" +
                     "Jobs: " + NumJobs.ToString() + "\n" +
                     "Machines: " + NumMachines.ToString() + "\n" +
                     "Tasks: " + NumTasks.ToString());
-        UIUpdater.UpdateTextUI("ScheduleDetailsText", 
+        UIUpdater.UpdateTextUI("ScheduleDetailsText",
             "Best Schedule Makespan: " + BestMakespan.ToString() + "\n" +
-                    "Average Iterations Until Minimized Makespan: " + "\n" +
-                    "Running Average Minimize Success Rate: " + "\n" +
-                    "Best Schedule: " + ConvertListToString(ref BestListSchedule));
+            "Average Iterations Until Minimized Makespan: " + "\n" +
+            "Running Average Minimize Success Rate: " + "\n");
         
+        BestScheduleTextField.transform.GetComponent<InputField>().text = ConvertListToString(ref BestListSchedule);
     }
 
     // Start is called before the first frame update
