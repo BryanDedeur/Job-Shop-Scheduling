@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Random = System.Random;
 
 public class JobShopSchedulerObject : MonoBehaviour
 {
-/*
-
-    public JobShopAlgorithm algorithm;
+    public JobShopData jsd;
+    public JobShopAlgorithm jsa;
 
     public List<JobObject> m_JobObjects;
     public List<MachineObject> m_MachineObjects;
@@ -31,18 +31,20 @@ public class JobShopSchedulerObject : MonoBehaviour
         m_JobObjects = new List<JobObject>();
         m_MachineObjects = new List<MachineObject>();
 
-        for (int y = 0; y < algorithm.NumMachines; y++)
+        for (int y = 0; y < jsd.NumMachines; y++)
         {
             m_MachineObjects.Add(MachineObject.CreateComponent(m_MachineObjectRef, this, y));
+            Transform machine = m_MachineObjects[y].transform.Find("Machine").GetComponent<Transform>();
+            machine.position = machine.position + new Vector3(10, 0, UnityEngine.Random.Range(0, 200.0f));
         }
 
-        for (int j = 0; j < algorithm.NumJobs; j++)
+        for (int j = 0; j < jsd.NumJobs; j++)
         {
             JobObject currentJob = JobObject.CreateComponent(m_JobObjectRef, this, j);
-            for (int t = 0; t < algorithm.NumMachines; t++)
+            for (int t = 0; t < jsd.NumMachines; t++)
             {
-                int machineIndex = algorithm.JobTaskMachines[j][t];
-                int duration = algorithm.JobTaskDurations[j][t];
+                int machineIndex = jsd.JobTaskMachines[j][t];
+                int duration = jsd.JobTaskDurations[j][t];
 
                 MachineObject currentMachine = m_MachineObjects[machineIndex];
 
@@ -55,18 +57,18 @@ public class JobShopSchedulerObject : MonoBehaviour
     
     public void UpdateSlider()
     {
-        plotter.ShowSample(algorithm.GenerationNumber, algorithm.CurrentMakespan);
-        plotter.UpdateSlider(algorithm.GenerationNumber);
+        plotter.ShowSample(jsd.IterationNumber, jsa.CurrentMakespan);
+        plotter.UpdateSlider(jsd.IterationNumber);
     }
 
     public void GenerateSchedule()
     {
-        for (int job = 0; job < algorithm.NumJobs; job++)
+        for (int job = 0; job < jsd.NumJobs; job++)
         {
-            for (int task = 0; task < algorithm.NumMachines; task++)
+            for (int task = 0; task < jsd.NumMachines; task++)
             {
-                print("Job: " + job + "Task: " + task);
-                int startTime = algorithm.JobTaskEndTimes[job][task] - m_JobObjects[job].m_Tasks[task].m_Duration;
+                //print("Job: " + job + "Task: " + task);
+                int startTime = jsd.JobTaskEndTimes[job][task] - m_JobObjects[job].m_Tasks[task].m_Duration;
                 m_JobObjects[job].m_Tasks[task].UpdateStartTime(startTime);
             }
         }
@@ -77,7 +79,7 @@ public class JobShopSchedulerObject : MonoBehaviour
             m_MachineObjects[i].UpdateGUI();
         }
 
-        plotter.PlotDot(algorithm.GenerationNumber, algorithm.BestMakespan);        
+        plotter.PlotDot(jsd.IterationNumber, jsd.BestMakespan);        
     }
 
     public void PrintResults(){
@@ -86,6 +88,5 @@ public class JobShopSchedulerObject : MonoBehaviour
 
     public void Clear(){
         // m_ScheduleGui
-    }*/
-
+    }
 }

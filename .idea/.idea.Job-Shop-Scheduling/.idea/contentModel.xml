@@ -12,14 +12,17 @@
             <e p="JobShopHeuristicGA.cs" t="Include" />
           </e>
           <e p="JobObject.cs" t="Include" />
+          <e p="JobShopAlgorithm.cs" t="Include" />
           <e p="JobShopData.cs" t="Include" />
-          <e p="JobShopIndirectAlgorithm.cs" t="Include" />
           <e p="JobShopInput.cs" t="Include" />
           <e p="JobShopSchedulerObject.cs" t="Include" />
           <e p="MachineObject.cs" t="Include" />
           <e p="MakespanPlotter.cs" t="Include" />
           <e p="OnTaskHover.cs" t="Include" />
           <e p="TaskObject.cs" t="Include" />
+          <e p="Test.cs" t="Include" />
+          <e p="TestPrinter.cs" t="Include" />
+          <e p="TestUpdater.cs" t="Include" />
           <e p="UI Scripts" t="Include">
             <e p="UIUpdater.cs" t="Include" />
           </e>

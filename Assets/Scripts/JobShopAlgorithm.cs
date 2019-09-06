@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JobShopIndirectAlgorithm : MonoBehaviour
+public class JobShopAlgorithm : MonoBehaviour
 {
     private JobShopData jsd;
+    public JobShopSchedulerObject jsso;
     public int CurrentMakespan = 999999;
     public List<int> CurrentSchedule;
     public int LastMakespan = 999999;
     public List<int> LastSchedule;
 
+    public long longestIteration = 0;
     private int ItterationCounter = 0;
 
 
@@ -129,6 +131,7 @@ public class JobShopIndirectAlgorithm : MonoBehaviour
                 LastSchedule = jsd.DefaultListSchedule;
                 LastMakespan = ComputeScheduleMakespan(ref LastSchedule);
                 jsd.UpdateVisuals();
+                jsso.CreateObjects();
             }
             MakeScheduleFromLast();
             CurrentMakespan = ComputeScheduleMakespan(ref CurrentSchedule);
@@ -141,6 +144,8 @@ public class JobShopIndirectAlgorithm : MonoBehaviour
                 jsd.CurrentSample += 1;
                 ItterationCounter = 0;
                 print("Break at itteration" + jsd.IterationNumber);
+                if (jsd.IterationNumber > longestIteration)
+                    longestIteration = jsd.IterationNumber;
                 jsd.IterationNumber = 0;
                 break;
             }
@@ -156,14 +161,10 @@ public class JobShopIndirectAlgorithm : MonoBehaviour
                     jsd.BestMakespan = CurrentMakespan;
                     jsd.BestListSchedule = CurrentSchedule;
                     jsd.UpdateVisuals();
+                    jsso.GenerateSchedule();
                 }
-                //BestSchedule = ConvertListToString(ref LastSchedule);
-                //BestMakespan = LastMakespan;
-
-                //jsso.GenerateSchedule();
-
             }
-            //jsso.UpdateSlider();
+            jsso.UpdateSlider();
         }
     }
 

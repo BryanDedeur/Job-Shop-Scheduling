@@ -97,6 +97,8 @@ public class JobShopData : MonoBehaviour
                     "Tasks: " + NumTasks.ToString());
         UIUpdater.UpdateTextUI("ScheduleDetailsText",
             "Best Schedule Makespan: " + BestMakespan.ToString() + "\n" +
+            "Current Iteration: " + IterationNumber.ToString() + "\n" +
+            "Current Sample: " + CurrentSample.ToString() + "\n" +
             "Average Iterations Until Minimized Makespan: " + "\n" +
             "Running Average Minimize Success Rate: " + "\n");
         
